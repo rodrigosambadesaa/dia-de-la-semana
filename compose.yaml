@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-docker-local-development-only-change-me}"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
