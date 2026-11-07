@@ -1,0 +1,75 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b36">
+  <meta name="description" content="Calcula el día de la semana de cualquier fecha, incluso años con miles de cifras, en numerosos idiomas.">
+  <title>¿Qué día de la semana fue? · Calendario infinito</title>
+  <link rel="stylesheet" href="{% static 'weekday/styles.css' %}">
+</head>
+<body>
+  <main class="shell">
+    <header class="intro">
+      <span class="eyebrow">CALENDARIO INFINITO · GREGORIANO</span>
+      <h1>¿Qué día de la semana <span>fue o será?</span></h1>
+      <p>Del pasado al futuro más remoto. Escribe una fecha en tu idioma, incluso con un año de miles de cifras.</p>
+    </header>
+    <section class="panel" aria-labelledby="form-title">
+      <h2 id="form-title">Consulta una fecha</h2>
+      <form method="post" id="date-form" novalidate>
+        {% csrf_token %}
+        <label for="date">Fecha</label>
+        <input id="date" name="date" type="text" autocomplete="off" spellcheck="false"
+               maxlength="12000" required autofocus placeholder="14 de febrero de 2011" value="{{ date_value }}"
+               aria-describedby="date-help" {% if error %}aria-invalid="true"{% endif %}>
+        <small id="date-help">Ejemplos: 14/03/2015 · March 14, 2015 · 2015-03-14 · 14 mars 2015 · 2015年3月14日</small>
+        <div class="options">
+          <div>
+            <label for="language">Idioma del resultado</label>
+            <input id="language" name="language" type="text" list="language-options"
+                   placeholder="Auto (idioma de la fecha)" maxlength="60" value="{{ language }}"
+                   aria-describedby="language-help">
+            <datalist id="language-options">
+              <option value="es">Español</option><option value="en">English</option>
+              <option value="gl">Galego</option><option value="ca">Català</option>
+              <option value="fr">Français</option><option value="pt">Português</option>
+              <option value="de">Deutsch</option><option value="it">Italiano</option>
+              <option value="ru">Русский</option><option value="ar">العربية</option>
+              <option value="hi">हिन्दी</option><option value="ja">日本語</option>
+              <option value="zh">中文</option><option value="pl">Polski</option>
+            </datalist>
+            <small id="language-help">Vacío: detección automática. También admite códigos como en_US, pt_BR o zh_Hans.</small>
+          </div>
+          <div>
+            <label for="order">Orden de fechas numéricas</label>
+            <select id="order" name="order">
+              <option value="auto" {% if order == 'auto' %}selected{% endif %}>Automático (día/mes/año)</option>
+              <option value="DMY" {% if order == 'DMY' %}selected{% endif %}>Día / mes / año</option>
+              <option value="MDY" {% if order == 'MDY' %}selected{% endif %}>Mes / día / año</option>
+              <option value="YMD" {% if order == 'YMD' %}selected{% endif %}>Año / mes / día</option>
+            </select>
+            <small>Para 03/04/2015, elija el orden correcto: ambas interpretaciones son posibles.</small>
+          </div>
+        </div>
+        <button type="submit">Calcular el día <span aria-hidden="true">→</span></button>
+      </form>
+      {% if error %}
+      <div class="message error" role="alert"><strong>No se pudo interpretar la fecha.</strong> {{ error }}</div>
+      {% endif %}
+      {% if result %}
+      <div class="message result" role="status" aria-live="polite">
+        <span class="result-label">El día de la semana corresponde a</span>
+        <strong class="weekday">{{ result.weekday_name }}</strong>
+        <span class="detail">{{ result.day }}/{{ result.month }}/{{ result.year }} · idioma: {{ result.language }} · orden: {{ result.order }}</span>
+      </div>
+      {% endif %}
+    </section>
+    <footer>
+      <p>Precisión matemática, sin límite de 4 dígitos en el año. Se aplica el calendario gregoriano proléptico, incluso antes de su adopción histórica. Año 0 no admitido.</p>
+      <p>Privacidad: la fecha se procesa en el servidor y no se guarda en una base de datos.</p>
+    </footer>
+  </main>
+</body>
+</html>
