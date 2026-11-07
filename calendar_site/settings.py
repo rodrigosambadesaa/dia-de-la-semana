@@ -38,7 +38,10 @@ USE_I18N = True
 USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STORAGES = {"staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}}
+STORAGES = {"staticfiles": {"BACKEND": (
+    "django.contrib.staticfiles.storage.StaticFilesStorage"
+    if DEBUG else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)}}
 SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = "DENY"
